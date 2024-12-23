@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setToken } from '@/redux/slices/authSlice';
+import { setToken } from '../../redux/slices/authSlice';
 import {
   Box,
   Button,
@@ -16,7 +16,7 @@ import {
   DialogActions,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import config from '@/config';
+import config from '../../config';
 
 const Login = () => {
   const navigate = useNavigate();
