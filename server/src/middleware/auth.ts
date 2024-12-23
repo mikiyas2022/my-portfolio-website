@@ -7,10 +7,15 @@ interface AuthRequest extends Request {
 
 export const authenticateToken = (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
+    console.log('Authenticating request...');
     const authHeader = req.headers['authorization'];
+    console.log('Auth header:', authHeader);
+    
     const token = authHeader && authHeader.split(' ')[1];
+    console.log('Extracted token:', token ? 'exists' : 'missing');
 
     if (!token) {
+      console.log('No token provided');
       return res.status(401).json({ message: 'No token provided' });
     }
 
@@ -20,6 +25,7 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
         return res.status(403).json({ message: 'Invalid token' });
       }
 
+      console.log('Token verified successfully. User:', user);
       req.user = user;
       next();
     });

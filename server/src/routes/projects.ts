@@ -35,20 +35,23 @@ router.get('/:id', async (req, res) => {
 router.post('/', authenticateToken, async (req: any, res) => {
   try {
     console.log('Creating new project:', req.body);
+    console.log('User from token:', req.user);
+    
     const { title, description, technologies, thumbnail } = req.body;
     const project = new Project({
       title,
       description,
       technologies,
       thumbnail,
-      user: req.user.id
+      user: req.user.userId
     });
+    
     const savedProject = await project.save();
     console.log('Project created successfully:', savedProject);
     res.status(201).json(savedProject);
   } catch (error) {
     console.error('Error creating project:', error);
-    res.status(500).json({ message: 'Error creating project' });
+    res.status(500).json({ message: 'Error creating project', error: error.message });
   }
 });
 
@@ -60,7 +63,7 @@ router.put('/:id', authenticateToken, async (req: any, res) => {
     if (!project) {
       return res.status(404).json({ message: 'Project not found' });
     }
-    if (project.user.toString() !== req.user.id) {
+    if (project.user.toString() !== req.user.userId) {
       return res.status(403).json({ message: 'Not authorized' });
     }
     const updatedProject = await Project.findByIdAndUpdate(
@@ -84,7 +87,7 @@ router.delete('/:id', authenticateToken, async (req: any, res) => {
     if (!project) {
       return res.status(404).json({ message: 'Project not found' });
     }
-    if (project.user.toString() !== req.user.id) {
+    if (project.user.toString() !== req.user.userId) {
       return res.status(403).json({ message: 'Not authorized' });
     }
     await project.deleteOne();
