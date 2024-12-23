@@ -2,8 +2,8 @@ import React from 'react';
 import { Box } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import Navbar from './Navbar';
 import { RootState } from '../../redux/store';
+import Navbar from './Navbar';
 
 const Layout: React.FC = () => {
   const { token } = useSelector((state: RootState) => state.auth);
