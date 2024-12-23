@@ -18,6 +18,9 @@ const Register = () => {
     setError('');
 
     try {
+      console.log('Attempting to register with:', { name, email, password });
+      console.log('API URL:', import.meta.env.VITE_API_URL);
+
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
         method: 'POST',
         headers: {
@@ -26,7 +29,9 @@ const Register = () => {
         body: JSON.stringify({ name, email, password }),
       });
 
+      console.log('Response status:', response.status);
       const data = await response.json();
+      console.log('Response data:', data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Registration failed');
@@ -39,6 +44,7 @@ const Register = () => {
 
       navigate('/');
     } catch (err) {
+      console.error('Registration error:', err);
       setError(err instanceof Error ? err.message : 'Registration failed');
     }
   };
