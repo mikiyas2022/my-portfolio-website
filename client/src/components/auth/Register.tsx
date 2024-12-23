@@ -1,115 +1,155 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Box, Button, TextField, Typography, Container, Paper } from '@mui/material';
-import { setCredentials } from '../../store/slices/authSlice';
+import { useDispatch } from 'react-redux';
+import { setToken } from '../../redux/slices/authSlice';
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Paper,
+  Container,
+  IconButton,
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import config from '../../config';
 
 const Register = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    phoneNumber: '',
+    domain: '',
+  });
+  const [error, setError] = useState('');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     try {
-      console.log('Attempting to register with:', { name, email, password });
-      console.log('API URL:', import.meta.env.VITE_API_URL);
-
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/register`, {
+      const response = await fetch(`${config.apiUrl}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify(formData),
       });
 
-      console.log('Response status:', response.status);
       const data = await response.json();
-      console.log('Response data:', data);
 
       if (!response.ok) {
         throw new Error(data.message || 'Registration failed');
       }
 
-      dispatch(setCredentials({
-        token: data.token,
-        user: data.user,
-      }));
-
+      dispatch(setToken(data.token));
       navigate('/');
     } catch (err) {
-      console.error('Registration error:', err);
       setError(err instanceof Error ? err.message : 'Registration failed');
     }
   };
 
   return (
-    <Container component="main" maxWidth="xs">
-      <Paper elevation={3} sx={{ p: 4, mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography component="h1" variant="h5">
-          Sign Up
+    <Container maxWidth="sm" sx={{ 
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center'
+    }}>
+      <Paper elevation={3} sx={{ p: 4, position: 'relative' }}>
+        <IconButton
+          sx={{ position: 'absolute', top: 8, left: 8 }}
+          onClick={() => navigate('/')}
+        >
+          <ArrowBackIcon />
+        </IconButton>
+        
+        <Typography variant="h5" align="center" gutterBottom sx={{ mb: 3 }}>
+          Register
         </Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
-          {error && (
-            <Typography color="error" sx={{ mb: 2 }}>
-              {error}
-            </Typography>
-          )}
+
+        {error && (
+          <Typography color="error" align="center" sx={{ mb: 2 }}>
+            {error}
+          </Typography>
+        )}
+
+        <Box component="form" onSubmit={handleSubmit}>
           <TextField
-            margin="normal"
-            required
             fullWidth
-            id="name"
-            label="Full Name"
+            label="Name"
             name="name"
-            autoComplete="name"
-            autoFocus
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
-          <TextField
+            value={formData.name}
+            onChange={handleChange}
             margin="normal"
             required
+          />
+          <TextField
             fullWidth
-            id="email"
-            label="Email Address"
+            label="Email"
             name="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <TextField
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
             margin="normal"
             required
+          />
+          <TextField
             fullWidth
-            name="password"
             label="Password"
+            name="password"
             type="password"
-            id="password"
-            autoComplete="new-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={handleChange}
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Phone Number"
+            name="phoneNumber"
+            type="tel"
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            margin="normal"
+            required
+          />
+          <TextField
+            fullWidth
+            label="Domain/Profession"
+            name="domain"
+            value={formData.domain}
+            onChange={handleChange}
+            margin="normal"
+            required
           />
           <Button
             type="submit"
-            fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            color="primary"
+            fullWidth
+            sx={{ mt: 3 }}
           >
-            Sign Up
+            Register
           </Button>
           <Button
-            fullWidth
             variant="text"
+            color="primary"
+            fullWidth
+            sx={{ mt: 1 }}
             onClick={() => navigate('/login')}
           >
-            Already have an account? Sign In
+            Already have an account? Login
           </Button>
         </Box>
       </Paper>

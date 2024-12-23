@@ -9,14 +9,29 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
-    lowercase: true,
   },
   password: {
     type: String,
     required: true,
   },
+  phoneNumber: {
+    type: String,
+    required: true,
+  },
+  domain: {
+    type: String,
+    required: true,
+  },
+  resetToken: {
+    type: String,
+  },
+  resetTokenExpiry: {
+    type: Date,
+  }
 }, {
   timestamps: true,
 });
 
-export default mongoose.model('User', userSchema); 
+const User = mongoose.model('User', userSchema);
+
+export default User; 
