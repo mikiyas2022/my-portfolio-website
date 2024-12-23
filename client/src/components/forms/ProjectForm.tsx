@@ -28,6 +28,7 @@ const ProjectForm = ({ onClose }: ProjectFormProps) => {
   const [technologies, setTechnologies] = useState<string[]>([]);
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [error, setError] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (currentProject) {
@@ -51,29 +52,36 @@ const ProjectForm = ({ onClose }: ProjectFormProps) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setUploading(true);
 
     try {
-      const formData = new FormData();
+      let thumbnailUrl = currentProject?.thumbnail || '';
+
       if (thumbnail) {
+        const formData = new FormData();
         formData.append('file', thumbnail);
-        formData.append('upload_preset', 'portfolio');
+        formData.append('upload_preset', 'ml_default');
+        formData.append('cloud_name', import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
 
         const uploadResponse = await fetch(config.cloudinaryUrl, {
           method: 'POST',
           body: formData,
         });
 
-        const uploadData = await uploadResponse.json();
-        if (!uploadResponse.ok) throw new Error('Failed to upload image');
+        if (!uploadResponse.ok) {
+          const errorData = await uploadResponse.json();
+          throw new Error(errorData.error?.message || 'Failed to upload image');
+        }
 
-        formData.append('thumbnail', uploadData.secure_url);
+        const uploadData = await uploadResponse.json();
+        thumbnailUrl = uploadData.secure_url;
       }
 
       const projectData = {
         title,
         description,
         technologies,
-        thumbnail: thumbnail ? formData.get('thumbnail') as string : currentProject?.thumbnail || '',
+        thumbnail: thumbnailUrl,
       };
 
       const response = await fetch(
@@ -104,7 +112,10 @@ const ProjectForm = ({ onClose }: ProjectFormProps) => {
       dispatch(setCurrentProject(null));
       onClose();
     } catch (err) {
+      console.error('Project form error:', err);
       setError(err instanceof Error ? err.message : 'Failed to save project');
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -166,6 +177,7 @@ const ProjectForm = ({ onClose }: ProjectFormProps) => {
           variant="contained"
           component="label"
           sx={{ mt: 2, mb: 2 }}
+          disabled={uploading}
         >
           Upload Thumbnail
           <input
@@ -186,8 +198,9 @@ const ProjectForm = ({ onClose }: ProjectFormProps) => {
             variant="contained"
             color="primary"
             fullWidth
+            disabled={uploading}
           >
-            {currentProject ? 'Update' : 'Create'} Project
+            {uploading ? 'Saving...' : currentProject ? 'Update' : 'Create'} Project
           </Button>
           <Button
             variant="outlined"
@@ -198,6 +211,7 @@ const ProjectForm = ({ onClose }: ProjectFormProps) => {
               dispatch(setCurrentProject(null));
               onClose();
             }}
+            disabled={uploading}
           >
             Cancel
           </Button>
