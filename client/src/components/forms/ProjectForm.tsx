@@ -58,32 +58,36 @@ const ProjectForm = ({ onClose }: ProjectFormProps) => {
       let thumbnailUrl = currentProject?.thumbnail || '';
 
       if (thumbnail) {
-        const timestamp = Math.round(new Date().getTime() / 1000);
         const formData = new FormData();
         formData.append('file', thumbnail);
-        formData.append('api_key', import.meta.env.VITE_CLOUDINARY_API_KEY);
-        formData.append('timestamp', String(timestamp));
         formData.append('upload_preset', 'portfolio_preset');
 
-        const uploadResponse = await fetch(
-          `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
-          {
-            method: 'POST',
-            headers: {
-              'Accept': 'application/json',
-            },
-            body: formData,
-          }
-        );
+        try {
+          const uploadResponse = await fetch(
+            `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/upload`,
+            {
+              method: 'POST',
+              body: formData,
+            }
+          );
 
-        if (!uploadResponse.ok) {
-          const errorText = await uploadResponse.text();
-          console.error('Cloudinary error:', errorText);
+          if (!uploadResponse.ok) {
+            const errorText = await uploadResponse.text();
+            console.error('Cloudinary upload failed:', {
+              status: uploadResponse.status,
+              statusText: uploadResponse.statusText,
+              errorText
+            });
+            throw new Error('Failed to upload image. Please try again.');
+          }
+
+          const uploadData = await uploadResponse.json();
+          console.log('Cloudinary upload success:', uploadData);
+          thumbnailUrl = uploadData.secure_url;
+        } catch (uploadError) {
+          console.error('Cloudinary upload error:', uploadError);
           throw new Error('Failed to upload image. Please try again.');
         }
-
-        const uploadData = await uploadResponse.json();
-        thumbnailUrl = uploadData.secure_url;
       }
 
       const projectData = {
