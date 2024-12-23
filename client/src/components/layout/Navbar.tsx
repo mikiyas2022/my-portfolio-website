@@ -36,14 +36,9 @@ const Navbar = () => {
           
           <Box>
             {token ? (
-              <>
-                <Button color="inherit" onClick={() => navigate('/projects')}>
-                  Projects
-                </Button>
-                <Button color="inherit" onClick={handleLogout}>
-                  Logout
-                </Button>
-              </>
+              <Button color="inherit" onClick={handleLogout}>
+                Logout
+              </Button>
             ) : (
               <>
                 <Button color="inherit" onClick={() => navigate('/login')}>

@@ -38,7 +38,7 @@ const Register = () => {
     setError('');
 
     try {
-      const response = await fetch(`${config.apiUrl}/api/auth/register`, {
+      const response = await fetch(`${config.apiUrl}/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ const Register = () => {
       }
 
       dispatch(setToken(data.token));
-      navigate('/');
+      navigate('/choose-template');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Registration failed');
     }

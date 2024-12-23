@@ -6,6 +6,7 @@ import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Layout from './components/layout/Layout';
 import Home from './components/pages/Home';
+import TemplateSelection from './components/templates/TemplateSelection';
 
 // Create a theme instance
 const theme = createTheme({
@@ -28,6 +29,7 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/choose-template" element={<TemplateSelection />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
           </Route>
