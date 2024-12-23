@@ -60,8 +60,8 @@ const ProjectForm = ({ onClose }: ProjectFormProps) => {
       if (thumbnail) {
         const formData = new FormData();
         formData.append('file', thumbnail);
-        formData.append('upload_preset', 'ml_default');
-        formData.append('cloud_name', import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
+        formData.append('api_key', import.meta.env.VITE_CLOUDINARY_API_KEY);
+        formData.append('timestamp', String(Math.round(new Date().getTime() / 1000)));
 
         const uploadResponse = await fetch(config.cloudinaryUrl, {
           method: 'POST',
@@ -70,6 +70,7 @@ const ProjectForm = ({ onClose }: ProjectFormProps) => {
 
         if (!uploadResponse.ok) {
           const errorData = await uploadResponse.json();
+          console.error('Cloudinary error:', errorData);
           throw new Error(errorData.error?.message || 'Failed to upload image');
         }
 
