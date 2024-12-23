@@ -8,6 +8,7 @@ import Layout from './components/layout/Layout';
 import Home from './components/pages/Home';
 import TemplateSelection from './components/templates/TemplateSelection';
 import ModernPortfolio from './components/templates/ModernPortfolio';
+import ProfileSetup from './components/profile/ProfileSetup';
 
 // Create a theme instance
 const theme = createTheme({
@@ -31,6 +32,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/choose-template" element={<TemplateSelection />} />
+          <Route path="/profile-setup" element={<ProfileSetup />} />
           <Route path="/modern-portfolio" element={<ModernPortfolio />} />
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />

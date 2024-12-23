@@ -1,12 +1,22 @@
 // Authentication slice for managing token state
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface User {
+interface SocialLink {
+  platform: string;
+  url: string;
+}
+
+export interface User {
   id: string;
   name: string;
   email: string;
   phoneNumber: string;
   domain: string;
+  token: string;
+  profileImage?: string;
+  jobPosition?: string;
+  aboutMe?: string;
+  socialLinks?: SocialLink[];
 }
 
 interface AuthState {

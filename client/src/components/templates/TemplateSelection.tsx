@@ -26,21 +26,7 @@ const TemplateSelection = () => {
 
   const handleTemplateSelect = (templateId: string) => {
     dispatch(setSelectedTemplate(templateId));
-    
-    // Redirect based on template
-    switch (templateId) {
-      case 'template1': // Modern Portfolio
-        navigate('/modern-portfolio');
-        break;
-      case 'template2': // Creative Portfolio
-        navigate('/creative-portfolio');
-        break;
-      case 'template3': // Professional Portfolio
-        navigate('/professional-portfolio');
-        break;
-      default:
-        navigate('/');
-    }
+    navigate('/profile-setup');
   };
 
   return (
