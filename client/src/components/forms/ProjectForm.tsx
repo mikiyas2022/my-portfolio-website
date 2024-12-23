@@ -60,8 +60,8 @@ const ProjectForm = ({ onClose }: ProjectFormProps) => {
       if (thumbnail) {
         const formData = new FormData();
         formData.append('file', thumbnail);
-        formData.append('api_key', import.meta.env.VITE_CLOUDINARY_API_KEY);
-        formData.append('timestamp', String(Math.round(new Date().getTime() / 1000)));
+        formData.append('upload_preset', 'portfolio_preset');
+        formData.append('cloud_name', import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
 
         const uploadResponse = await fetch(config.cloudinaryUrl, {
           method: 'POST',
