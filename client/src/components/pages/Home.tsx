@@ -1,21 +1,22 @@
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Grid, Typography, Container, Button, Dialog } from '@mui/material';
-import { RootState } from '../../store';
+import { RootState } from '../../redux/store';
 import ProjectCard from '../projects/ProjectCard';
 import ProjectForm from '../forms/ProjectForm';
-import { setProjects, setIsEditing } from '../../store/slices/portfolioSlice';
+import { setProjects, setLoading } from '../../redux/slices/projectSlice';
 import config from '../../config';
 
 const Home = () => {
   const dispatch = useDispatch();
-  const { projects, isLoading } = useSelector((state: RootState) => state.portfolio);
-  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { projects, loading } = useSelector((state: RootState) => state.project);
+  const { token } = useSelector((state: RootState) => state.auth);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
+        dispatch(setLoading(true));
         const response = await fetch(`${config.apiUrl}/projects`);
         const data = await response.json();
         
@@ -31,11 +32,10 @@ const Home = () => {
   }, [dispatch]);
 
   const handleAddProject = () => {
-    dispatch(setIsEditing(false));
     setIsFormOpen(true);
   };
 
-  if (isLoading) {
+  if (loading) {
     return <Typography>Loading...</Typography>;
   }
 
@@ -46,7 +46,7 @@ const Home = () => {
           <Typography variant="h4" component="h1" gutterBottom>
             My Portfolio
           </Typography>
-          {isAuthenticated && (
+          {token && (
             <Button
               variant="contained"
               color="primary"
@@ -58,7 +58,7 @@ const Home = () => {
           )}
         </Grid>
         {projects.map((project) => (
-          <Grid item xs={12} sm={6} md={4} key={project.id}>
+          <Grid item xs={12} sm={6} md={4} key={project._id}>
             <ProjectCard project={project} onEdit={() => setIsFormOpen(true)} />
           </Grid>
         ))}
