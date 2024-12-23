@@ -58,15 +58,20 @@ const ProjectForm = ({ onClose }: ProjectFormProps) => {
       let thumbnailUrl = currentProject?.thumbnail || '';
 
       if (thumbnail) {
+        const timestamp = Math.round(new Date().getTime() / 1000);
         const formData = new FormData();
         formData.append('file', thumbnail);
-        formData.append('upload_preset', 'portfolio_preset');
-        formData.append('cloud_name', import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
+        formData.append('api_key', import.meta.env.VITE_CLOUDINARY_API_KEY);
+        formData.append('timestamp', String(timestamp));
+        formData.append('folder', 'portfolio');
 
-        const uploadResponse = await fetch(config.cloudinaryUrl, {
-          method: 'POST',
-          body: formData,
-        });
+        const uploadResponse = await fetch(
+          `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
+          {
+            method: 'POST',
+            body: formData,
+          }
+        );
 
         if (!uploadResponse.ok) {
           const errorData = await uploadResponse.json();
