@@ -1,6 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import auth from '../middleware/auth';
+import auth, { AuthRequest } from '../middleware/auth';
 
 const router = express.Router();
 
@@ -32,8 +32,12 @@ const projectSchema = new mongoose.Schema({
 const Project = mongoose.model('Project', projectSchema);
 
 // Create project
-router.post('/', auth, async (req, res) => {
+router.post('/', auth, async (req: AuthRequest, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
     const { title, description, technologies, thumbnail } = req.body;
     const project = new Project({
       title,
@@ -62,8 +66,12 @@ router.get('/', async (req, res) => {
 });
 
 // Update project
-router.put('/:id', auth, async (req, res) => {
+router.put('/:id', auth, async (req: AuthRequest, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
     const { title, description, technologies, thumbnail } = req.body;
     const project = await Project.findOneAndUpdate(
       { _id: req.params.id, userId: req.user.id },
@@ -81,8 +89,12 @@ router.put('/:id', auth, async (req, res) => {
 });
 
 // Delete project
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', auth, async (req: AuthRequest, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
     const project = await Project.findOneAndDelete({
       _id: req.params.id,
       userId: req.user.id,
