@@ -1,3 +1,4 @@
+// Authentication slice for managing token state
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface AuthState {
