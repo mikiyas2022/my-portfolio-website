@@ -68,24 +68,31 @@ const ProfileSetup: React.FC = () => {
       if (profileImage) {
         const formData = new FormData();
         formData.append('file', profileImage);
-        formData.append('upload_preset', 'ml_default');
+        formData.append('upload_preset', 'portfolio_preset');
         
-        const uploadResponse = await fetch(
-          'https://api.cloudinary.com/v1_1/defbzjdkk/image/upload',
-          {
-            method: 'POST',
-            body: formData,
+        try {
+          console.log('Starting image upload to Cloudinary...');
+          const uploadResponse = await fetch(
+            'https://api.cloudinary.com/v1_1/defbzjdkk/image/upload',
+            {
+              method: 'POST',
+              body: formData,
+            }
+          );
+
+          if (!uploadResponse.ok) {
+            const errorData = await uploadResponse.json();
+            console.error('Cloudinary upload failed:', errorData);
+            throw new Error(`Upload failed: ${errorData.error?.message || 'Unknown error'}`);
           }
-        );
 
-        if (!uploadResponse.ok) {
-          const errorData = await uploadResponse.json();
-          console.error('Cloudinary error:', errorData);
-          throw new Error('Failed to upload image: ' + (errorData.error?.message || 'Unknown error'));
+          console.log('Image upload successful');
+          const uploadData = await uploadResponse.json();
+          imageUrl = uploadData.secure_url;
+        } catch (uploadError) {
+          console.error('Error during image upload:', uploadError);
+          throw new Error('Failed to upload image. Please try again.');
         }
-
-        const uploadData = await uploadResponse.json();
-        imageUrl = uploadData.secure_url;
       }
 
       // Update user profile
