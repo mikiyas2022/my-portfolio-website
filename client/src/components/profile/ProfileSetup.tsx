@@ -69,6 +69,7 @@ const ProfileSetup: React.FC = () => {
         const formData = new FormData();
         formData.append('file', profileImage);
         formData.append('upload_preset', 'portfolio_preset');
+        formData.append('api_key', '345126745742656');
         
         try {
           console.log('Starting image upload to Cloudinary...');
@@ -76,18 +77,23 @@ const ProfileSetup: React.FC = () => {
             'https://api.cloudinary.com/v1_1/defbzjdkk/image/upload',
             {
               method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+              },
               body: formData,
             }
           );
 
+          console.log('Upload response status:', uploadResponse.status);
+          const responseText = await uploadResponse.text();
+          console.log('Upload response:', responseText);
+
           if (!uploadResponse.ok) {
-            const errorData = await uploadResponse.json();
-            console.error('Cloudinary upload failed:', errorData);
-            throw new Error(`Upload failed: ${errorData.error?.message || 'Unknown error'}`);
+            throw new Error(`Upload failed: ${responseText}`);
           }
 
-          console.log('Image upload successful');
-          const uploadData = await uploadResponse.json();
+          const uploadData = JSON.parse(responseText);
+          console.log('Image upload successful:', uploadData);
           imageUrl = uploadData.secure_url;
         } catch (uploadError) {
           console.error('Error during image upload:', uploadError);
