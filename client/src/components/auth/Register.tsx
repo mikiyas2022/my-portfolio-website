@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setToken } from '../../redux/slices/authSlice';
+import { setToken } from '@/redux/slices/authSlice';
 import {
   Box,
   Button,
@@ -12,7 +12,7 @@ import {
   IconButton,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import config from '../../config';
+import config from '@/config';
 
 const Register = () => {
   const navigate = useNavigate();
