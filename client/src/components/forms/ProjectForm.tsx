@@ -60,7 +60,8 @@ const ProjectForm = ({ onClose }: ProjectFormProps) => {
       if (thumbnail) {
         const formData = new FormData();
         formData.append('file', thumbnail);
-        formData.append('upload_preset', 'ml_default');
+        formData.append('upload_preset', 'portfolio_preset');
+        formData.append('cloud_name', import.meta.env.VITE_CLOUDINARY_CLOUD_NAME);
 
         const uploadResponse = await fetch(
           `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
