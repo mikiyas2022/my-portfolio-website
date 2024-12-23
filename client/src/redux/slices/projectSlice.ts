@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface Project {
+export interface Project {
   _id: string;
   title: string;
   description: string;
@@ -11,7 +11,7 @@ interface Project {
   userId: string;
 }
 
-interface ProjectState {
+export interface ProjectState {
   projects: Project[];
   loading: boolean;
   error: string | null;
@@ -43,4 +43,4 @@ const projectSlice = createSlice({
 });
 
 export const { setProjects, setLoading, setError } = projectSlice.actions;
-export default projectSlice.reducer; 
+export default projectSlice.reducer;

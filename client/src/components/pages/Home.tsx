@@ -4,7 +4,7 @@ import { Grid, Typography, Container, Button, Dialog } from '@mui/material';
 import { RootState } from '../../redux/store';
 import ProjectCard from '../projects/ProjectCard';
 import ProjectForm from '../forms/ProjectForm';
-import { setProjects, setLoading } from '../../redux/slices/projectSlice';
+import { setProjects, setLoading, Project } from '../../redux/slices/projectSlice';
 import config from '../../config';
 
 const Home = () => {
@@ -57,7 +57,7 @@ const Home = () => {
             </Button>
           )}
         </Grid>
-        {projects.map((project) => (
+        {projects.map((project: Project) => (
           <Grid item xs={12} sm={6} md={4} key={project._id}>
             <ProjectCard project={project} onEdit={() => setIsFormOpen(true)} />
           </Grid>

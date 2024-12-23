@@ -12,17 +12,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../redux/store';
-
-interface Project {
-  _id: string;
-  title: string;
-  description: string;
-  imageUrl: string;
-  liveUrl?: string;
-  githubUrl?: string;
-  technologies: string[];
-  userId: string;
-}
+import { Project } from '../../redux/slices/projectSlice';
 
 interface ProjectCardProps {
   project: Project;
