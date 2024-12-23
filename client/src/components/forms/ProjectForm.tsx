@@ -58,12 +58,9 @@ const ProjectForm = ({ onClose }: ProjectFormProps) => {
       let thumbnailUrl = currentProject?.thumbnail || '';
 
       if (thumbnail) {
-        const timestamp = Math.round(new Date().getTime() / 1000);
         const formData = new FormData();
         formData.append('file', thumbnail);
-        formData.append('api_key', import.meta.env.VITE_CLOUDINARY_API_KEY);
-        formData.append('timestamp', String(timestamp));
-        formData.append('folder', 'portfolio');
+        formData.append('upload_preset', 'ml_default');
 
         const uploadResponse = await fetch(
           `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
