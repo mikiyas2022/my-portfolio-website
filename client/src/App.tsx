@@ -1,7 +1,7 @@
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { store } from './store';
+import { store } from './redux/store';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Layout from './components/layout/Layout';
@@ -25,15 +25,13 @@ function App() {
     <Provider store={store}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <Router>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-            </Route>
-          </Routes>
-        </Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Home />} />
+          </Route>
+        </Routes>
       </ThemeProvider>
     </Provider>
   );
