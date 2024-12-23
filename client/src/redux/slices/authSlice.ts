@@ -1,12 +1,22 @@
 // Authentication slice for managing token state
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  phoneNumber: string;
+  domain: string;
+}
+
 interface AuthState {
   token: string | null;
+  user: User | null;
 }
 
 const initialState: AuthState = {
-  token: localStorage.getItem('token'),
+  token: null,
+  user: null,
 };
 
 const authSlice = createSlice({
@@ -15,14 +25,16 @@ const authSlice = createSlice({
   reducers: {
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
-      localStorage.setItem('token', action.payload);
     },
-    clearToken: (state) => {
+    setUser: (state, action: PayloadAction<User>) => {
+      state.user = action.payload;
+    },
+    logout: (state) => {
       state.token = null;
-      localStorage.removeItem('token');
+      state.user = null;
     },
   },
 });
 
-export const { setToken, clearToken } = authSlice.actions;
+export const { setToken, setUser, logout } = authSlice.actions;
 export default authSlice.reducer; 

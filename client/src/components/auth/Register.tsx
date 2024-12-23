@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { setToken } from '../../redux/slices/authSlice';
+import { setToken, setUser } from '../../redux/slices/authSlice';
 import {
   Box,
   Button,
@@ -54,6 +54,7 @@ const Register = () => {
       }
 
       dispatch(setToken(data.token));
+      dispatch(setUser(data.user));
       navigate('/choose-template');
     } catch (err) {
       console.error('Registration error:', err);
