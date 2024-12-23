@@ -98,7 +98,7 @@ const ProjectForm = ({ onClose }: ProjectFormProps) => {
       };
 
       const response = await fetch(
-        `${config.apiUrl}/api/projects${currentProject ? `/${currentProject.id}` : ''}`,
+        `${config.apiUrl}/projects${currentProject ? `/${currentProject.id}` : ''}`,
         {
           method: currentProject ? 'PUT' : 'POST',
           headers: {
