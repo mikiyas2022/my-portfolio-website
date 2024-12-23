@@ -1,236 +1,118 @@
-import { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React from 'react';
 import {
-  Box,
-  Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
   TextField,
-  Typography,
-  Paper,
-  Chip,
+  Button,
+  Box,
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
-import { RootState } from '../../store';
-import { addProject, updateProject, setIsEditing, setCurrentProject } from '../../store/slices/portfolioSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { addProject } from '../../redux/slices/projectSlice';
+import { RootState } from '../../redux/store';
 import config from '../../config';
 
-interface ProjectFormProps {
+export interface ProjectFormProps {
+  open: boolean;
   onClose: () => void;
 }
 
-const ProjectForm = ({ onClose }: ProjectFormProps) => {
+const ProjectForm: React.FC<ProjectFormProps> = ({ open, onClose }) => {
   const dispatch = useDispatch();
-  const { currentProject } = useSelector((state: RootState) => state.portfolio);
-  const token = useSelector((state: RootState) => state.auth.token);
+  const { token } = useSelector((state: RootState) => state.auth);
+  const [formData, setFormData] = React.useState({
+    title: '',
+    description: '',
+    image: '',
+    tags: ['Research', 'Information Architecture']
+  });
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [technology, setTechnology] = useState('');
-  const [technologies, setTechnologies] = useState<string[]>([]);
-  const [thumbnail, setThumbnail] = useState<File | null>(null);
-  const [error, setError] = useState('');
-  const [uploading, setUploading] = useState(false);
-
-  useEffect(() => {
-    if (currentProject) {
-      setTitle(currentProject.title);
-      setDescription(currentProject.description);
-      setTechnologies(currentProject.technologies);
-    }
-  }, [currentProject]);
-
-  const handleAddTechnology = () => {
-    if (technology.trim() && !technologies.includes(technology.trim())) {
-      setTechnologies([...technologies, technology.trim()]);
-      setTechnology('');
-    }
-  };
-
-  const handleRemoveTechnology = (techToRemove: string) => {
-    setTechnologies(technologies.filter(tech => tech !== techToRemove));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setUploading(true);
-
     try {
-      let thumbnailUrl = currentProject?.thumbnail || '';
-
-      if (thumbnail) {
-        const formData = new FormData();
-        formData.append('file', thumbnail);
-        formData.append('upload_preset', 'portfolio_preset');
-
-        try {
-          const uploadResponse = await fetch(
-            `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/upload`,
-            {
-              method: 'POST',
-              body: formData,
-            }
-          );
-
-          if (!uploadResponse.ok) {
-            const errorText = await uploadResponse.text();
-            console.error('Cloudinary upload failed:', {
-              status: uploadResponse.status,
-              statusText: uploadResponse.statusText,
-              errorText
-            });
-            throw new Error('Failed to upload image. Please try again.');
-          }
-
-          const uploadData = await uploadResponse.json();
-          console.log('Cloudinary upload success:', uploadData);
-          thumbnailUrl = uploadData.secure_url;
-        } catch (uploadError) {
-          console.error('Cloudinary upload error:', uploadError);
-          throw new Error('Failed to upload image. Please try again.');
-        }
-      }
-
-      const projectData = {
-        title,
-        description,
-        technologies,
-        thumbnail: thumbnailUrl,
-      };
-
-      const response = await fetch(
-        `${config.apiUrl}/api/projects${currentProject ? `/${currentProject.id}` : ''}`,
-        {
-          method: currentProject ? 'PUT' : 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(projectData),
-        }
-      );
-
-      const data = await response.json();
+      const response = await fetch(`${config.apiUrl}/api/projects`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      });
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to save project');
+        throw new Error('Failed to create project');
       }
 
-      if (currentProject) {
-        dispatch(updateProject(data));
-      } else {
-        dispatch(addProject(data));
-      }
-
-      dispatch(setIsEditing(false));
-      dispatch(setCurrentProject(null));
+      const data = await response.json();
+      dispatch(addProject(data));
+      setFormData({
+        title: '',
+        description: '',
+        image: '',
+        tags: ['Research', 'Information Architecture']
+      });
       onClose();
-    } catch (err) {
-      console.error('Project form error:', err);
-      setError(err instanceof Error ? err.message : 'Failed to save project');
-    } finally {
-      setUploading(false);
+    } catch (error) {
+      console.error('Error creating project:', error);
     }
   };
 
   return (
-    <Paper elevation={3} sx={{ p: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        {currentProject ? 'Edit Project' : 'Add New Project'}
-      </Typography>
-      <Box component="form" onSubmit={handleSubmit}>
-        {error && (
-          <Typography color="error" sx={{ mb: 2 }}>
-            {error}
-          </Typography>
-        )}
-        <TextField
-          fullWidth
-          label="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          margin="normal"
-          required
-        />
-        <TextField
-          fullWidth
-          label="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          margin="normal"
-          required
-          multiline
-          rows={4}
-        />
-        <Box sx={{ mt: 2, mb: 1 }}>
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>Add New Project</DialogTitle>
+      <DialogContent>
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
           <TextField
-            label="Technologies"
-            value={technology}
-            onChange={(e) => setTechnology(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddTechnology())}
-            sx={{ mr: 1 }}
+            fullWidth
+            label="Project Title"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            margin="normal"
+            required
           />
-          <Button
-            variant="contained"
-            onClick={handleAddTechnology}
-            startIcon={<AddIcon />}
-          >
-            Add
-          </Button>
-        </Box>
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 2 }}>
-          {technologies.map((tech) => (
-            <Chip
-              key={tech}
-              label={tech}
-              onDelete={() => handleRemoveTechnology(tech)}
-            />
-          ))}
-        </Box>
-        <Button
-          variant="contained"
-          component="label"
-          sx={{ mt: 2, mb: 2 }}
-          disabled={uploading}
-        >
-          Upload Thumbnail
-          <input
-            type="file"
-            hidden
-            accept="image/*"
-            onChange={(e) => setThumbnail(e.target.files?.[0] || null)}
+          <TextField
+            fullWidth
+            label="Description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            multiline
+            rows={4}
+            margin="normal"
+            required
           />
-        </Button>
-        {thumbnail && (
-          <Typography variant="body2" sx={{ mb: 2 }}>
-            Selected file: {thumbnail.name}
-          </Typography>
-        )}
-        <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+          <TextField
+            fullWidth
+            label="Image URL"
+            name="image"
+            value={formData.image}
+            onChange={handleChange}
+            margin="normal"
+            required
+          />
           <Button
             type="submit"
             variant="contained"
-            color="primary"
             fullWidth
-            disabled={uploading}
-          >
-            {uploading ? 'Saving...' : currentProject ? 'Update' : 'Create'} Project
-          </Button>
-          <Button
-            variant="outlined"
-            color="secondary"
-            fullWidth
-            onClick={() => {
-              dispatch(setIsEditing(false));
-              dispatch(setCurrentProject(null));
-              onClose();
+            sx={{
+              mt: 3,
+              bgcolor: '#4CAF50',
+              '&:hover': { bgcolor: '#45a049' },
             }}
-            disabled={uploading}
           >
-            Cancel
+            Add Project
           </Button>
         </Box>
-      </Box>
-    </Paper>
+      </DialogContent>
+    </Dialog>
   );
 };
 
