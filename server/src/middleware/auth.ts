@@ -22,15 +22,16 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
     jwt.verify(token, process.env.JWT_SECRET as string, (err: any, user: any) => {
       if (err) {
         console.error('Token verification error:', err);
-        return res.status(403).json({ message: 'Invalid token' });
+        return res.status(403).json({ message: 'Invalid token', error: err.message });
       }
 
       console.log('Token verified successfully. User:', user);
       req.user = user;
       next();
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Authentication error:', error);
-    res.status(500).json({ message: 'Authentication error' });
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    res.status(500).json({ message: 'Authentication error', error: errorMessage });
   }
 }; 

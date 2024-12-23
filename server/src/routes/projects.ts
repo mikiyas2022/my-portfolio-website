@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
     console.log('Fetching all projects');
     const projects = await Project.find().sort({ createdAt: -1 });
     res.json(projects);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching projects:', error);
     res.status(500).json({ message: 'Error fetching projects' });
   }
@@ -25,7 +25,7 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ message: 'Project not found' });
     }
     res.json(project);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error fetching project:', error);
     res.status(500).json({ message: 'Error fetching project' });
   }
@@ -49,9 +49,10 @@ router.post('/', authenticateToken, async (req: any, res) => {
     const savedProject = await project.save();
     console.log('Project created successfully:', savedProject);
     res.status(201).json(savedProject);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error creating project:', error);
-    res.status(500).json({ message: 'Error creating project', error: error.message });
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    res.status(500).json({ message: 'Error creating project', error: errorMessage });
   }
 });
 
@@ -73,7 +74,7 @@ router.put('/:id', authenticateToken, async (req: any, res) => {
     );
     console.log('Project updated successfully:', updatedProject);
     res.json(updatedProject);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error updating project:', error);
     res.status(500).json({ message: 'Error updating project' });
   }
@@ -93,7 +94,7 @@ router.delete('/:id', authenticateToken, async (req: any, res) => {
     await project.deleteOne();
     console.log('Project deleted successfully');
     res.json({ message: 'Project deleted' });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Error deleting project:', error);
     res.status(500).json({ message: 'Error deleting project' });
   }
