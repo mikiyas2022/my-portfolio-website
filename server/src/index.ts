@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
 import authRoutes from './routes/auth';
+import projectRoutes from './routes/projects';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(express.json());
 
 // Routes
 app.use('/auth', authRoutes);
+app.use('/api/projects', projectRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Portfolio API is running' });
