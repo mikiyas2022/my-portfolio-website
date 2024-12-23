@@ -10,7 +10,7 @@ import config from '../../config';
 const Home = () => {
   const dispatch = useDispatch();
   const { projects, isLoading } = useSelector((state: RootState) => state.portfolio);
-  const { isAuthenticated, token } = useSelector((state: RootState) => state.auth);
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   useEffect(() => {

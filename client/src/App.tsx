@@ -1,13 +1,11 @@
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Layout from './components/layout/Layout';
 import Home from './components/pages/Home';
-import { useSelector } from 'react-redux';
-import { RootState } from './store';
 
 // Create a theme instance
 const theme = createTheme({

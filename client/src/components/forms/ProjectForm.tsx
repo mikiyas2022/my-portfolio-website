@@ -7,11 +7,9 @@ import {
   Typography,
   Paper,
   Chip,
-  IconButton,
 } from '@mui/material';
-import { Add as AddIcon, Close as CloseIcon } from '@mui/icons-material';
+import { Add as AddIcon } from '@mui/icons-material';
 import { RootState } from '../../store';
-import { Project } from '../../types';
 import { addProject, updateProject, setIsEditing, setCurrentProject } from '../../store/slices/portfolioSlice';
 import config from '../../config';
 
